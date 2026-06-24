@@ -32,7 +32,7 @@ jobs:
         id: build
         run: |
           python -m nuitka `
-            --standalone `
+            --onefile `
             --windows-console-mode=disable `
             --assume-yes-for-downloads `
             --enable-plugin=tk-inter `
@@ -44,11 +44,12 @@ jobs:
             --output-dir=build `
             --output-filename=ShowIsland `
             src/main.py
-          echo "BUILD_DIR=build\main.dist" >> $env:GITHUB_ENV
 
       - name: Bundle assets
         run: |
-          $distDir = "build\main.dist"
+          $distDir = "dist"
+          New-Item -ItemType Directory -Force -Path $distDir | Out-Null
+          Copy-Item -Path "build\ShowIsland.exe" -Destination "$distDir\" -Force
           Copy-Item -Path config.toml -Destination "$distDir\" -Force
           if (Test-Path templates) {
             Copy-Item -Path templates -Destination "$distDir\templates\" -Recurse -Force
@@ -57,8 +58,7 @@ jobs:
 
       - name: Archive build
         run: |
-          $distDir = "build\main.dist"
-          Compress-Archive -Path "$distDir\*" -DestinationPath "ShowIsland-windows-x64.zip"
+          Compress-Archive -Path "dist\*" -DestinationPath "ShowIsland-windows-x64.zip"
           Write-Host "Archive created: ShowIsland-windows-x64.zip"
 
       - name: Upload artifact
@@ -68,15 +68,33 @@ jobs:
           path: ShowIsland-windows-x64.zip
           retention-days: 30
 
-      - name: Create Release (on tag)
-        if: startsWith(github.ref, 'refs/tags/v')
+      - name: Set release variables
+        id: release_vars
+        run: |
+          if ("${{ github.ref }}" -like "refs/tags/v*") {
+            # 正式版本 tag → 使用 tag 名称
+            echo "RELEASE_TAG=${{ github.ref_name }}" >> $env:GITHUB_ENV
+            echo "RELEASE_NAME=Release ${{ github.ref_name }}" >> $env:GITHUB_ENV
+            echo "IS_PRERELEASE=false" >> $env:GITHUB_ENV
+          } else {
+            # master/main 分支推送 → 生成日期标签
+            $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
+            $shortSha = "${{ github.sha }}".Substring(0, 7)
+            echo "RELEASE_TAG=dev-$timestamp-$shortSha" >> $env:GITHUB_ENV
+            echo "RELEASE_NAME=Development Build ($timestamp)" >> $env:GITHUB_ENV
+            echo "IS_PRERELEASE=true" >> $env:GITHUB_ENV
+          }
+
+      - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          name: Release ${{ github.ref_name }}
+          tag_name: ${{ env.RELEASE_TAG }}
+          name: ${{ env.RELEASE_NAME }}
+          prerelease: ${{ env.IS_PRERELEASE }}
           body: |
             ## 下载
 
-            [ShowIsland-windows-x64.zip](${{ github.server_url }}/${{ github.repository }}/releases/download/${{ github.ref_name }}/ShowIsland-windows-x64.zip)
+            [ShowIsland-windows-x64.zip](${{ github.server_url }}/${{ github.repository }}/releases/download/${{ env.RELEASE_TAG }}/ShowIsland-windows-x64.zip)
 
             ## 使用说明
 
