@@ -1,0 +1,159 @@
+﻿hotkey = "<ctrl>+<shift>+s"
+threshold = 0.8
+templates_dir = "templates"
+
+# 首领传言
+[[items]]
+image = ""
+text = "陨落的源头"
+class = "首领传言"
+map = "无名之岛"
+content = "欧罗什：英雄悲剧珠宝，欧罗什的太阳徽记，破碎三曲"
+rank = "B"
+
+[[items]]
+image = ""
+text = "吞星者"
+class = "首领传言"
+map = "静谧神庙"
+content = "乌崔德：魔力符文任务道具，乌特雷系列技能（待确认）"
+rank = "B"
+
+[[items]]
+image = ""
+text = "最后一个倒下"
+class = "首领传言"
+map = "恸哭悬崖"
+content = "沃拉娜"
+rank = ""
+
+[[items]]
+image = ""
+text = "循环的尽头"
+class = "首领传言"
+map = "蔓生丛林"
+content = "梅德维德：沃拉娜的围攻"
+rank = "B"
+
+# 炸坟岛传言
+[[items]]
+image = ""
+text = "未知的废墟"
+class = "炸坟岛传言"
+map = "掘尸遗迹"
+content = "免费日志"
+rank = "A"
+
+[[items]]
+image = ""
+text = "无尽的悬崖"
+class = "炸坟岛传言"
+map = "乱石半岛"
+content = ""
+rank = "B"
+
+[[items]]
+image = ""
+text = "荒凉而可怕"
+class = "炸坟岛传言"
+map = "褪色浅滩"
+content = ""
+rank = "B"
+
+[[items]]
+image = ""
+text = "肆意奔走的野性"
+class = "炸坟岛传言"
+map = "牧野荒原"
+content = "小精灵"
+rank = "B"
+
+[[items]]
+image = ""
+text = "至少很干燥"
+class = "炸坟岛传言"
+map = "脱落沟壑"
+content = ""
+rank = "B"
+
+[[items]]
+image = ""
+text = "亚硫酸！"
+class = "炸坟岛传言"
+map = "焦灼小岛"
+content = ""
+rank = "B"
+
+[[items]]
+image = ""
+text = "有点可疑"
+class = "炸坟岛传言"
+map = "贫瘠环礁"
+content = "保险箱"
+rank = "B"
+
+[[items]]
+image = ""
+text = "寒冷如冰"
+class = "炸坟岛传言"
+map = "凛风悬崖"
+content = ""
+rank = "B"
+
+[[items]]
+image = ""
+text = "温暖但危险"
+class = "炸坟岛传言"
+map = "笼葱海岛"
+content = ""
+rank = "B"
+
+[[items]]
+image = ""
+text = "没东西喝"
+class = "炸坟岛传言"
+map = "死水盆地"
+content = ""
+rank = "B"
+
+# 传奇地图传言
+[[items]]
+image = ""
+text = "一个好人"
+class = "传奇地图传言"
+map = "顿悟时刻"
+content = "无名先知"
+rank = "D"
+
+[[items]]
+image = ""
+text = "倒映的水面"
+class = "传奇地图传言"
+map = "千裂泽"
+content = "碎裂的魔镜"
+rank = "D"
+
+[[items]]
+image = ""
+text = "近乎天堂"
+class = "传奇地图传言"
+map = "纯净乐园"
+content = "经验图"
+rank = "B"
+
+[[items]]
+image = ""
+text = "坠落的星辰"
+class = "传奇地图传言"
+map = "天陨荒原"
+content = "8孔遗物"
+rank = "S"
+
+[[items]]
+image = ""
+text = "所有闪闪发光之物"
+class = "传奇地图传言"
+map = "颠沛领域"
+content = "金币图"
+rank = "A"
+
