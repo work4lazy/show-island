@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    name: Build Windows EXE
+    name: Build Windows EXE (Nuitka)
     runs-on: windows-latest
     permissions:
       contents: write
@@ -84,7 +84,7 @@ jobs:
             3. 将模板图片放入 `templates/` 目录
             4. 运行 `ShowIsland.exe`
 
-            ## 文件校验
+            ## 包含文件
 
             | 文件 | 说明 |
             |------|------|
