@@ -34,6 +34,7 @@ jobs:
           python -m nuitka `
             --standalone `
             --windows-console-mode=disable `
+            --assume-yes-for-downloads `
             --enable-plugin=tk-inter `
             --include-package=cv2 `
             --include-package=numpy `
