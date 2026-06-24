@@ -1,0 +1,95 @@
+name: Build and Release
+
+on:
+  push:
+    branches: [main, master]
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Windows EXE
+    runs-on: windows-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install opencv-python pillow pynput pystray numpy nuitka
+
+      - name: Build with Nuitka (standalone)
+        id: build
+        run: |
+          python -m nuitka `
+            --standalone `
+            --windows-console-mode=disable `
+            --enable-plugin=tk-inter `
+            --include-package=cv2 `
+            --include-package=numpy `
+            --include-package=PIL `
+            --include-package=pynput `
+            --include-package=pystray `
+            --output-dir=build `
+            --output-filename=ShowIsland `
+            src/main.py
+          echo "BUILD_DIR=build\main.dist" >> $env:GITHUB_ENV
+
+      - name: Bundle assets
+        run: |
+          $distDir = "build\main.dist"
+          Copy-Item -Path config.toml -Destination "$distDir\" -Force
+          if (Test-Path templates) {
+            Copy-Item -Path templates -Destination "$distDir\templates\" -Recurse -Force
+          }
+          Write-Host "Assets bundled into $distDir"
+
+      - name: Archive build
+        run: |
+          $distDir = "build\main.dist"
+          Compress-Archive -Path "$distDir\*" -DestinationPath "ShowIsland-windows-x64.zip"
+          Write-Host "Archive created: ShowIsland-windows-x64.zip"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ShowIsland-windows-x64
+          path: ShowIsland-windows-x64.zip
+          retention-days: 30
+
+      - name: Create Release (on tag)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Release ${{ github.ref_name }}
+          body: |
+            ## 下载
+
+            [ShowIsland-windows-x64.zip](${{ github.server_url }}/${{ github.repository }}/releases/download/${{ github.ref_name }}/ShowIsland-windows-x64.zip)
+
+            ## 使用说明
+
+            1. 解压 ZIP 到任意目录
+            2. 编辑 `config.toml` 配置快捷键和模板
+            3. 将模板图片放入 `templates/` 目录
+            4. 运行 `ShowIsland.exe`
+
+            ## 文件校验
+
+            | 文件 | 说明 |
+            |------|------|
+            | `ShowIsland.exe` | 主程序 |
+            | `config.toml` | 配置文件 |
+            | `templates/` | 模板图片目录 |
+          files: ShowIsland-windows-x64.zip
+          generate_release_notes: true

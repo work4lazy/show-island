@@ -1,4 +1,4 @@
-hotkey = "<ctrl>+<shift>+s"
+hotkey = "<ctrl>+1"
 threshold = 0.8
 templates_dir = "templates"
 

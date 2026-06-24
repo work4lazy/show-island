@@ -4,7 +4,7 @@ from tkinter import ttk
 
 from PIL import Image, ImageDraw
 
-from .matcher import sort_results
+from matcher import sort_results
 
 
 # ── 托盘图标 ────────────────────────────────────────────────────

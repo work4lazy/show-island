@@ -13,10 +13,10 @@ from pystray import Icon, Menu, MenuItem
 import tkinter as tk
 from tkinter import messagebox
 
-from show_island.config import load_config
-from show_island.screenshot import capture_screen
-from show_island.matcher import match_templates
-from show_island.ui import create_tray_image, ResultWindow
+from config import load_config
+from screenshot import capture_screen
+from matcher import match_templates
+from ui import create_tray_image, ResultWindow
 
 logging.basicConfig(
     level=logging.INFO,
