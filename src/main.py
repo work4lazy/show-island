@@ -1,8 +1,3 @@
-"""游戏截图内容识别工具 — 主入口。
-
-托盘常驻后台，全局快捷键触发截图识别。
-快捷键按下立即弹窗提示，匹配完成后原地切换为结果。
-"""
 import logging
 import queue
 import threading
@@ -27,6 +22,7 @@ logger = logging.getLogger(__name__)
 
 # ── 模板校验 ────────────────────────────────────────────────────
 
+
 def _validate_template_images(items: list[dict]) -> list[str]:
     """校验所有模板图片是否存在。返回错误信息列表（空列表表示全部通过）。"""
     errors: list[str] = []
@@ -34,17 +30,14 @@ def _validate_template_images(items: list[dict]) -> list[str]:
         image_path = item["image"]
         text = item.get("text", "?")
         if not image_path:
-            errors.append(
-                f"第 {i+1} 项「{text}」: image 路径为空，请填写模板图片路径"
-            )
+            errors.append(f"第 {i + 1} 项「{text}」: image 路径为空，请填写模板图片路径")
         elif not Path(image_path).exists():
-            errors.append(
-                f"第 {i+1} 项「{text}」: 模板图片不存在\n  → {image_path}"
-            )
+            errors.append(f"第 {i + 1} 项「{text}」: 模板图片不存在\n  → {image_path}")
     return errors
 
 
 # ── 快捷键回调 ──────────────────────────────────────────────────
+
 
 def _make_hotkey_callback(config: dict, result_queue: queue.Queue):
     """返回快捷键回调函数。
@@ -54,6 +47,7 @@ def _make_hotkey_callback(config: dict, result_queue: queue.Queue):
     2. 截图 + 模板匹配
     3. 向队列发送 "done" 或 "error" 事件
     """
+
     def callback():
         # 立即通知 UI 弹出"匹配中"窗口
         result_queue.put({"status": "matching"})
@@ -69,9 +63,7 @@ def _make_hotkey_callback(config: dict, result_queue: queue.Queue):
 
         logger.info("开始模板匹配（%d 个模板）...", len(config["items"]))
         try:
-            matched = match_templates(
-                screenshot, config["items"], config["threshold"]
-            )
+            matched = match_templates(screenshot, config["items"], config["threshold"])
             logger.info("匹配完成，命中 %d 项", len(matched))
             result_queue.put({"status": "done", "matched": matched})
         except Exception as e:
@@ -82,6 +74,7 @@ def _make_hotkey_callback(config: dict, result_queue: queue.Queue):
 
 
 # ── 主入口 ──────────────────────────────────────────────────────
+
 
 def main():
     logger.info("加载配置...")
@@ -104,6 +97,15 @@ def main():
 
     result_queue: queue.Queue = queue.Queue()
 
+    # 隐藏的 Tkinter 根窗口（用于消息循环 + Toplevel 父窗口）
+    root = tk.Tk()
+    root.withdraw()
+
+    def _exit_app():
+        """彻底退出程序：停止托盘图标 + 退出 Tkinter 主循环。"""
+        tray_icon.stop()
+        root.quit()
+
     hotkey = config["hotkey"]
     logger.info("注册全局快捷键: %s", hotkey)
 
@@ -113,15 +115,11 @@ def main():
         "screenshot_recognizer",
         tray_image,
         "截图识别工具",
-        menu=Menu(MenuItem("退出", lambda icon, item: icon.stop())),
+        menu=Menu(MenuItem("退出", lambda icon, item: _exit_app())),
     )
     tray_thread = threading.Thread(target=tray_icon.run, daemon=True)
     tray_thread.start()
     logger.info("托盘已启动")
-
-    # 隐藏的 Tkinter 根窗口（用于消息循环 + Toplevel 父窗口）
-    root = tk.Tk()
-    root.withdraw()
 
     # 当前活跃的结果窗口引用
     current_window: ResultWindow | None = None
@@ -170,9 +168,11 @@ def main():
     root.after(500, poll_queue)
 
     # 启动全局热键监听
-    listener = keyboard.GlobalHotKeys({
-        hotkey: _make_hotkey_callback(config, result_queue),
-    })
+    listener = keyboard.GlobalHotKeys(
+        {
+            hotkey: _make_hotkey_callback(config, result_queue),
+        }
+    )
     listener.start()
     logger.info("热键监听已启动，按 %s 触发截图识别", hotkey)
 
